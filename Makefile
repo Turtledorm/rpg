@@ -1,28 +1,65 @@
-CC     = gcc
-CFLAGS = -g -Wall -ansi -O2 -pedantic -Wno-unused-result
-RM     = rm
-#-------------------------------------------------------------------
+CC:= gcc
+CFLAGS:= -Wall -O3 -std=c99 -pedantic -Wno-unused-result
+LIBS:= -lm
+MKDIR:= mkdir -p
+RMDIR:= rm -rf
+RM:= rm -f
+BINDIR:= bin
+SRCDIR:= src
+INCDIR:= include
+OBJDIR:= obj
+DOCDIR:= doc
+BGMDIR:= bgm
+BIN:= Rpg
+SRC:= $(wildcard $(SRCDIR)/*.c)
+OBJ:= $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRC))
+INC:= -I$(INCDIR)
+TAR:= $(BIN).tar.gz
 
-rpg: main.o atributos.o batalha.o item.o extra.o musica.o
-	$(CC) main.o atributos.o batalha.o item.o extra.o musica.o -o rpg -lm
+.PHONY: dump tar count clean distclean tarclean pull push amend
 
-main.o: main.c atributos.h batalha.h item.h extra.h
-	$(CC) $(CFLAGS) -c main.c 
+all: $(BINDIR)/$(BIN)
 
-atributos.o: atributos.c atributos.h extra.h
-	$(CC) $(CFLAGS) -c atributos.c  
+$(BINDIR)/$(BIN): $(OBJ) | $(BINDIR)
+	$(CC) $^ $(LIBS) -o $@
+	@echo "Generating C binary \033[1;32m"$@"\033[0m"
 
-batalha.o: batalha.c batalha.h atributos.h item.h extra.h musica.h
-	$(CC) $(CFLAGS) -c batalha.c
+$(OBJ): | $(OBJDIR)
 
-item.o: item.c item.h atributos.h extra.h
-	$(CC) $(CFLAGS) -c item.c
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-extra.o: extra.c extra.h
-	$(CC) $(CFLAGS) -c extra.c
+$(OBJDIR) $(BINDIR):
+	$(MKDIR) $@
 
-musicaa.o: musicaa.c musicaa.h
-	$(CC) $(CFLAGS) -c musicaa.c
+dump:
+	@echo "src:" $(SRC)
+	@echo "obj:" $(OBJ)
 
-clean: 
-	rm -f *.o 
+tar:
+	$(MKDIR) $(BIN)/
+	cp -r $(INCDIR)/ $(SRCDIR)/ $(DOCDIR)/ $(BGMDIR)/ Makefile *.md $(BIN)/
+	tar -czf $(TAR) $(BIN)/
+	$(RMDIR) $(BIN)/
+	@echo "Arquivo\033[1;32m" $(TAR) "\033[0mcriado com sucesso"
+
+count:
+	wc -l $(SRCDIR)/* $(INCDIR)/*
+
+clean:
+	$(RMDIR) $(OBJDIR)/
+
+distclean: clean
+	$(RMDIR) $(BINDIR)/
+
+tarclean:
+	$(RM) $(TAR)
+
+pull:
+	git pull origin master
+
+push:
+	git add . && git commit -m "$(M)" && git push
+
+amend:
+	git add . && git commit --amend && git push -f

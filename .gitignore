@@ -1,0 +1,6 @@
+# Arquivos ignorados pelo git
+bin/*
+obj/*
+*.tar
+*~
+.dropbox

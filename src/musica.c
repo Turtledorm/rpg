@@ -1,5 +1,6 @@
 
 #include <stdlib.h>  /* system() */
+#include <string.h>  /* strcpy(), strcat() */
 
 #include "extra.h"
 
@@ -9,8 +10,13 @@
 
 void tocaMusica(char nome[])
 {
-	#ifdef __linux__ 
-		system("while [ 1 ]; do aplay -q " nome "; done &");
+	char command[100];
+
+	#ifdef __linux__
+		strcpy(command, "while [ 1 ]; do aplay -q ");
+		strcat(command, nome);
+		strcat(command, "; done &");
+		system(command);
 	#elif __WINDOWS__
 		system(nome);
 	#endif

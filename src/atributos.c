@@ -35,8 +35,8 @@ void criaJogador(Jogador *eu)
 
 	} while (toupper(resposta) == 'N');
 
-	/* 'atr' é um ponteiro para a estrutura eu->stat */
-	atr = (int *) &eu->stat;
+	/* 'atr' é um ponteiro para a estrutura eu->status */
+	atr = (int *) &eu->status;
 
 	do {
 		/* Antes de começarmos, zeramos os atributos */
@@ -66,7 +66,7 @@ void criaJogador(Jogador *eu)
 			printf("\n<~ %s ~>\n"
 				   "-----------\n", eu->nome);
 			for (i = 0; i < NUM_ATRIB; i++)
-				printf("%4s = %2d\n", atributo[i], *(atr + i));
+				printf("%4s = %2d\n", atrib[i], *(atr + i));
 
 			printf("\nDigite 'R' para refazer ou "
 				   "qualquer outra tecla para continuar: ");
@@ -91,17 +91,17 @@ void geraOponente(Jogador *foe)
 	low  = STAT/5 - STAT/10;
 	high = STAT/5 + STAT/10;
 
-	/* Aqui são percorridos os atributos contidos em foe->stat, e
+	/* Aqui são percorridos os atributos contidos em foe->status, e
 	   randomicamente associados os respectivos valores */
-	atr = (int *) &foe->stat;
+	atr = (int *) &foe->status;
 	for (i = 0; i < NUM_ATRIB; i++)
 		*(atr + i) = randomInteger(low, high);
 
 	#ifdef DEBUG
 		printf("\n HP = %2d, ATK = %2d,  DEF = %2d\n"
 				 "AGI = %2d, SPD = %2d, LUCK = %2d\n",
-				foe->stat.maxHp, foe->stat.atk, foe->stat.def, 
-				foe->stat.agi,   foe->stat.spd, foe->stat.luck);
+				foe->status.maxHp, foe->status.atk, foe->status.def, 
+				foe->status.agi,   foe->status.spd, foe->status.luck);
 	#endif
 }
 
@@ -109,10 +109,10 @@ void geraOponente(Jogador *foe)
  * Inicializa alguns atributos e parâmetros dos jogadores. 
  *----------------------------------------------------------------------------*/
 
-void inicializa(Player *eu, Player *foe)
+void inicializa(Jogador *eu, Jogador *foe)
 {
-	eu->stat.hp = eu->stat.maxHp;
-	foe->stat.hp = foe->stat.maxHp;
+	eu->status.hp = eu->status.maxHp;
+	foe->status.hp = foe->status.maxHp;
 	eu->atb = foe->atb = foe->acao = 0;
 	eu->potencia = foe->potencia = 1;
 	eu->defendido = foe->defendido = false;

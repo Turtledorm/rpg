@@ -1,8 +1,9 @@
 
 #include <stdio.h>   /* scanf, printf, ... */
+#include <stdlib.h>  /* free */
 
+#include "atributos.h"
 #include "extra.h"
-#include "player.h"
 #include "item.h"
 
 /*----------------------------------------------------------------------------*

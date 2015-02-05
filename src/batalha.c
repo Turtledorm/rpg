@@ -6,9 +6,8 @@
 #include <stdbool.h> /* bool, true, false  */
 #include <math.h>    /* sin, cos, ...      */
 
-#include "jogador.h"
+#include "atributos.h"
 #include "extra.h"
-#include "item.h"
 #include "batalha.h"
 #include "musica.h"
 
@@ -25,9 +24,9 @@
 void batalha(Jogador eu, Jogador foe)
 {
 	/* Toca a música especificada indefinidamente */
-	tocaMusica("ffvi.wav");
+	tocaMusica("bgm/ffvi.wav");
 
-	while (eu.stat.hp > 0 && foe.stat.hp > 0) {
+	while (eu.status.hp > 0 && foe.status.hp > 0) {
 		/* Exibe barras de vida na tela */
 		lifebar(eu);
 		lifebar(foe);
@@ -35,8 +34,8 @@ void batalha(Jogador eu, Jogador foe)
 		/* Loop até chegar a vez de um personagem. O (+1) nesses dois
 		   casos impede o personagem de nunca jogar caso SPD == 0. */
 		while (eu.atb < MAX_ATB && foe.atb < MAX_ATB) {
-			eu.atb += eu.stat.spd + 1;
-			foe.atb += foe.stat.spd + 1
+			eu.atb += eu.status.spd + 1;
+			foe.atb += foe.status.spd + 1;
 		}
 
 		if (eu.atb >= MAX_ATB) {
@@ -72,10 +71,10 @@ void batalha(Jogador eu, Jogador foe)
 	lifebar(eu);
 	lifebar(foe);
 	printf("\n> %s foi aniquilado.\n", 
-		(eu.stat.hp <= 0) ? eu.nome : foe.nome);
+		(eu.status.hp <= 0) ? eu.nome : foe.nome);
 
 	printf("\n***** Você %s! *****\n\n", 
-		(eu.stat.hp > 0) ? "ganhou" : "perdeu");
+		(eu.status.hp > 0) ? "ganhou" : "perdeu");
 }
 
 /*----------------------------------------------------------------------------*/
@@ -104,9 +103,9 @@ void turno(Jogador *x, Jogador *y)
 				congela(1);
 			}
 
-			if (acerto(x->stat.agi, y->stat.agi)) {
-				dano = x->stat.atk - y->stat.def;
-				if (y->defendido) dano -= y->stat.def;
+			if (acerto(x->status.agi, y->status.agi)) {
+				dano = x->status.atk - y->status.def;
+				if (y->defendido) dano -= y->status.def;
 
 				/* Evita dano 0 ou que 'cura' o oponente */
 				if (dano <= 0) dano = 1; 
@@ -114,15 +113,15 @@ void turno(Jogador *x, Jogador *y)
 				dano *= x->potencia;
 				dano += randomInteger((-dano)/5, dano/5);
 
-				if (critico(x->stat.luck)) {
+				if (critico(x->status.luck)) {
 					dano *= 2;
 					printf(" CRÍTICO!");
 					fflush(stdout);
 					congela(1);
 				}
 
-				y->stat.hp -= dano;
-				if (y->stat.hp < 0) y->stat.hp = 0; /* HP nunca negativo */
+				y->status.hp -= dano;
+				if (y->status.hp < 0) y->status.hp = 0; /* HP nunca negativo */
 
 				printf("\nTira %d de vida.\n", dano);
 			}
@@ -140,9 +139,9 @@ void turno(Jogador *x, Jogador *y)
 		/* Defender */
 		case 3:
 			printf("> %s defende-se. DEF foi dobrada!\n", x->nome);
-			if (x->stat.hp < x->stat.maxHp) {
+			if (x->status.hp < x->status.maxHp) {
 				puts("Recupera 1 de vida!");
-				(x->stat.hp)++;
+				(x->status.hp)++;
 			}
 			x->defendido = true;
 	}
@@ -192,17 +191,17 @@ bool critico(int sorte)
  * de HP que ele possui no momento.
  */
 
-void lifebar(Player x)
+void lifebar(Jogador x)
 {
 	int cont;
 
 	printf("\n%s {x%d}", x.nome, x.potencia);
 	if (x.defendido) printf(" [defendendo]");
 
-	printf("\n%3d [", x.stat.hp);
-	for (cont = 0; cont < x.stat.hp; cont++)
+	printf("\n%3d [", x.status.hp);
+	for (cont = 0; cont < x.status.hp; cont++)
 		printf("=");
-	while (cont++ < x.stat.maxHp)
+	while (cont++ < x.status.maxHp)
 		printf(" ");
 	printf("]\n");
 }
